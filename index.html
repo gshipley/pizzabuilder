@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Stack Pizza Builder</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      padding: 20px;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #2c3e50;
+      font-size: 2.5rem;
+    }
+
+    .builder-section {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 50px;
+      width: 100%;
+    }
+
+    .dropdowns-container {
+      display: flex;
+      width: 100%;
+      flex-wrap: nowrap;
+      gap: 15px;
+      justify-content: space-between;
+    }
+
+    .dropdown-section {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .dropdown-label {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #2c3e50;
+      font-size: 1.1rem;
+      white-space: nowrap;
+    }
+
+    .dropdown {
+      position: relative;
+      width: 100%;
+    }
+
+    .dropdown select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background-color: white;
+      font-size: 0.95rem;
+      appearance: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown select:hover {
+      border-color: #3498db;
+    }
+
+    .dropdown select:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+    }
+
+    .dropdown::after {
+      content: '▼';
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #2c3e50;
+    }
+
+    .deploy-section {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    #deploy-btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 15px 50px;
+      font-size: 1.2rem;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #deploy-btn:hover {
+      background-color: #2980b9;
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+
+    #deploy-btn:active {
+      transform: translateY(0);
+    }
+
+    .visualization {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-top: 20px;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .description {
+      flex: 1;
+      min-width: 300px;
+      background-color: #f8f9fa;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .description p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .pizza-container {
+      flex: 0 0 350px;
+      position: relative;
+      width: 350px;
+      height: 350px;
+      margin: 0 auto;
+    }
+
+    .pizza-part {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: all 0.5s ease;
+      opacity: 0;
+    }
+
+    .pizza-part.active {
+      opacity: 1;
+    }
+
+    .pizza-base {
+      background-color: #4299e1;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: 0;
+    }
+
+    .logo-overlay {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 60px;
+      height: 60px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+    }
+
+    .logo-overlay svg {
+      width: 35px;
+      height: 35px;
+    }
+
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 40px;
+    }
+
+    .step {
+      text-align: center;
+      flex: 1;
+      padding: 10px;
+      position: relative;
+    }
+
+    .step::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      width: 100%;
+      height: 2px;
+      background-color: #ddd;
+      transform: translateY(-50%);
+      z-index: -1;
+    }
+
+    .step:last-child::after {
+      display: none;
+    }
+
+    .step-number {
+      background-color: #bdc3c7;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 10px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-number {
+      background-color: #3498db;
+      box-shadow: 0 0 0 5px rgba(52, 152, 219, 0.3);
+    }
+
+    .step-label {
+      font-weight: 500;
+      color: #7f8c8d;
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-label {
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .pizza-complete {
+      margin-top: 30px;
+      text-align: center;
+      font-weight: bold;
+      color: #27ae60;
+      font-size: 1.2rem;
+      display: none;
+    }
+
+    .pizza-complete.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Responsive design */
+    @media (max-width: 1100px) {
+      .dropdowns-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 15px;
+        scrollbar-width: thin;
+        scrollbar-color: #3498db #f5f7fa;
+      }
+      
+      .dropdowns-container::-webkit-scrollbar {
+        height: 8px;
+      }
+      
+      .dropdowns-container::-webkit-scrollbar-track {
+        background: #f5f7fa;
+      }
+      
+      .dropdowns-container::-webkit-scrollbar-thumb {
+        background-color: #3498db;
+        border-radius: 10px;
+      }
+      
+      .dropdown-section {
+        min-width: 200px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .step-label {
+        font-size: 0.85rem;
+      }
+      
+      .step-number {
+        width: 35px;
+        height: 35px;
+      }
+      
+      .description p {
+        font-size: 1rem;
+      }
+      
+      .pizza-container {
+        flex: 0 0 300px;
+        width: 300px;
+        height: 300px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      body {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+      }
+      
+      .dropdown-label {
+        font-size: 1rem;
+      }
+      
+      .dropdown select {
+        padding: 10px;
+      }
+      
+      #deploy-btn {
+        padding: 12px 40px;
+        font-size: 1.1rem;
+      }
+      
+      .pizza-container {
+        flex: 0 0 250px;
+        width: 250px;
+        height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Stack Pizza Builder</h1>
+
+    <div class="step-indicator">
+      <div class="step active">
+        <div class="step-number">1</div>
+        <div class="step-label">GPU Hardware</div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-label">Base Model</div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-label">Vector Database</div>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-label">Chat UI</div>
+      </div>
+    </div>
+
+    <div class="builder-section">
+      <div class="dropdowns-container">
+        <div class="dropdown-section">
+          <div class="dropdown-label">GPU Hardware</div>
+          <div class="dropdown">
+            <select id="gpu-select">
+              <option value="">Select GPU Hardware</option>
+              <option value="gaudi">Intel Gaudi</option>
+              <option value="nvidia">NVIDIA</option>
+              <option value="amd">AMD</option>
+              <option value="cpu">CPU Only</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="dropdown-section">
+          <div class="dropdown-label">Base Model</div>
+          <div class="dropdown">
+            <select id="model-select" disabled>
+              <option value="">Select Base Model</option>
+              <option value="granite">Granite</option>
+              <option value="llama">Llama</option>
+              <option value="qwen">Qwen</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="dropdown-section">
+          <div class="dropdown-label">Vector Database</div>
+          <div class="dropdown">
+            <select id="vector-select" disabled>
+              <option value="">Select Vector Database</option>
+              <option value="pgvector">pgvector</option>
+              <option value="mongodb">MongoDB</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="dropdown-section">
+          <div class="dropdown-label">Chat UI</div>
+          <div class="dropdown">
+            <select id="ui-select" disabled>
+              <option value="">Select Chat UI</option>
+              <option value="anythingllm">AnythingLLM</option>
+              <option value="openwebui">Open WebUI</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="deploy-section">
+      <button id="deploy-btn" disabled>Deploy</button>
+    </div>
+
+    <div class="visualization">
+      <div class="description">
+        <p id="stack-description">
+          Start building your AI stack by selecting a GPU hardware option. You'll see your AI stack visualization build up as a delicious pizza in real-time!
+        </p>
+        <div class="pizza-complete" id="complete-message">
+          🎉 Your AI stack is complete and ready to deploy!
+        </div>
+      </div>
+      
+      <div class="pizza-container">
+        <div class="pizza-base"></div>
+        
+        <!-- Pizza parts will be SVGs -->
+        <svg class="pizza-part crust" id="crust" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="150" cy="150" r="140" fill="#E2A764" stroke="#BD8540" stroke-width="3"/>
+          <circle cx="150" cy="150" r="125" fill="#F3C17F" stroke="#BD8540" stroke-width="1"/>
+        </svg>
+        
+        <svg class="pizza-part cheese" id="cheese" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="150" cy="150" r="125" fill="#FBE46D" stroke="#E6C75F" stroke-width="1"/>
+          <!-- Cheese texture -->
+          <circle cx="120" cy="100" r="8" fill="#FCE985"/>
+          <circle cx="180" cy="130" r="10" fill="#FCE985"/>
+          <circle cx="90" cy="160" r="9" fill="#FCE985"/>
+          <circle cx="210" cy="170" r="7" fill="#FCE985"/>
+          <circle cx="140" cy="200" r="8" fill="#FCE985"/>
+          <circle cx="160" cy="70" r="7" fill="#FCE985"/>
+        </svg>
+        
+        <svg class="pizza-part topping1" id="topping1" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- Pepperoni -->
+          <circle cx="100" cy="100" r="15" fill="#D62D20"/>
+          <circle cx="160" cy="80" r="15" fill="#D62D20"/>
+          <circle cx="200" cy="140" r="15" fill="#D62D20"/>
+          <circle cx="130" cy="170" r="15" fill="#D62D20"/>
+          <circle cx="90" cy="210" r="15" fill="#D62D20"/>
+          <circle cx="220" cy="190" r="15" fill="#D62D20"/>
+          <circle cx="180" cy="220" r="15" fill="#D62D20"/>
+        </svg>
+        
+        <svg class="pizza-part topping2" id="topping2" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- Mushrooms -->
+          <ellipse cx="130" cy="120" rx="12" ry="8" fill="#A57D64"/>
+          <rect x="126" y="120" width="8" height="10" fill="#BEAE9A"/>
+          
+          <ellipse cx="210" cy="160" rx="12" ry="8" fill="#A57D64"/>
+          <rect x="206" y="160" width="8" height="10" fill="#BEAE9A"/>
+          
+          <ellipse cx="90" cy="180" rx="12" ry="8" fill="#A57D64"/>
+          <rect x="86" y="180" width="8" height="10" fill="#BEAE9A"/>
+          
+          <ellipse cx="170" cy="210" rx="12" ry="8" fill="#A57D64"/>
+          <rect x="166" y="210" width="8" height="10" fill="#BEAE9A"/>
+          
+          <ellipse cx="150" cy="90" rx="12" ry="8" fill="#A57D64"/>
+          <rect x="146" y="90" width="8" height="10" fill="#BEAE9A"/>
+        </svg>
+
+        <!-- Logo overlay in bottom right -->
+        <div class="logo-overlay">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const gpuSelect = document.getElementById('gpu-select');
+    const modelSelect = document.getElementById('model-select');
+    const vectorSelect = document.getElementById('vector-select');
+    const uiSelect = document.getElementById('ui-select');
+    const deployBtn = document.getElementById('deploy-btn');
+    const stackDescription = document.getElementById('stack-description');
+    const completeMessage = document.getElementById('complete-message');
+    
+    // Pizza parts
+    const crust = document.getElementById('crust');
+    const cheese = document.getElementById('cheese');
+    const topping1 = document.getElementById('topping1');
+    const topping2 = document.getElementById('topping2');
+    
+    // Step indicators
+    const steps = document.querySelectorAll('.step');
+    
+    // GPU Hardware selection
+    gpuSelect.addEventListener('change', function() {
+      if (this.value) {
+        modelSelect.disabled = false;
+        activateStep(1);
+        showPizzaPart('crust');
+        updateDescription();
+      } else {
+        modelSelect.disabled = true;
+        deactivateSteps();
+        hidePizzaParts();
+        updateDescription();
+      }
+    });
+    
+    // Base Model selection
+    modelSelect.addEventListener('change', function() {
+      if (this.value) {
+        vectorSelect.disabled = false;
+        activateStep(2);
+        showPizzaPart('cheese');
+        updateDescription();
+      } else {
+        vectorSelect.disabled = true;
+        deactivateStepsFrom(2);
+        hidePizzaPartsFrom('cheese');
+        updateDescription();
+      }
+    });
+    
+    // Vector Database selection
+    vectorSelect.addEventListener('change', function() {
+      if (this.value) {
+        uiSelect.disabled = false;
+        activateStep(3);
+        showPizzaPart('topping1');
+        updateDescription();
+      } else {
+        uiSelect.disabled = true;
+        deactivateStepsFrom(3);
+        hidePizzaPartsFrom('topping1');
+        updateDescription();
+      }
+    });
+    
+    // Chat UI selection
+    uiSelect.addEventListener('change', function() {
+      if (this.value) {
+        deployBtn.disabled = false;
+        // Fixed: Check if the step exists before trying to access it
+        if (steps[3]) {
+          activateStep(3);
+        }
+        showPizzaPart('topping2');
+        completeMessage.classList.add('active');
+        updateDescription();
+      } else {
+        deployBtn.disabled = true;
+        // Fixed: Safely deactivate steps
+        if (steps[3]) {
+          deactivateStepsFrom(3);
+        }
+        hidePizzaPartsFrom('topping2');
+        completeMessage.classList.remove('active');
+        updateDescription();
+      }
+    });
+    
+    // Deploy button
+    deployBtn.addEventListener('click', function() {
+      alert('Deploying your AI stack with the following components:\n\n' +
+            'GPU Hardware: ' + gpuSelect.options[gpuSelect.selectedIndex].text + '\n' +
+            'Base Model: ' + modelSelect.options[modelSelect.selectedIndex].text + '\n' +
+            'Vector Database: ' + vectorSelect.options[vectorSelect.selectedIndex].text + '\n' +
+            'Chat UI: ' + uiSelect.options[uiSelect.selectedIndex].text);
+    });
+    
+    // Helper functions
+    function activateStep(stepIndex) {
+      // Fixed: Ensure the step exists before trying to modify it
+      if (steps[stepIndex]) {
+        steps[stepIndex].classList.add('active');
+      }
+    }
+    
+    function deactivateSteps() {
+      steps.forEach((step, index) => {
+        if (index > 0) {
+          step.classList.remove('active');
+        }
+      });
+    }
+    
+    function deactivateStepsFrom(stepIndex) {
+      steps.forEach((step, index) => {
+        if (index >= stepIndex) {
+          step.classList.remove('active');
+        }
+      });
+    }
+    
+    function showPizzaPart(part) {
+      const element = document.getElementById(part);
+      if (element) {
+        element.classList.add('active');
+      }
+    }
+    
+    function hidePizzaParts() {
+      document.querySelectorAll('.pizza-part').forEach(part => {
+        part.classList.remove('active');
+      });
+    }
+    
+    function hidePizzaPartsFrom(partId) {
+      const parts = ['crust', 'cheese', 'topping1', 'topping2'];
+      const startIndex = parts.indexOf(partId);
+      
+      for (let i = startIndex; i < parts.length; i++) {
+        const element = document.getElementById(parts[i]);
+        if (element) {
+          element.classList.remove('active');
+        }
+      }
+    }
+    
+    function updateDescription() {
+      let description = '';
+      
+      const gpu = gpuSelect.value ? gpuSelect.options[gpuSelect.selectedIndex].text : '';
+      const model = modelSelect.value ? modelSelect.options[modelSelect.selectedIndex].text : '';
+      const vector = vectorSelect.value ? vectorSelect.options[vectorSelect.selectedIndex].text : '';
+      const ui = uiSelect.value ? uiSelect.options[uiSelect.selectedIndex].text : '';
+      
+      if (!gpu) {
+        description = 'Start building your AI stack by selecting a GPU hardware option. You\'ll see your AI stack visualization build up as a delicious pizza in real-time!';
+      } else {
+        description = `Your AI stack is building with ${gpu} as the foundation (pizza crust)`;
+        
+        if (model) {
+          description += `, ${model} as the base model (cheese)`;
+          
+          if (vector) {
+            description += `, ${vector} as the vector database (pepperoni)`;
+            
+            if (ui) {
+              description += `, and ${ui} as the chat interface (mushrooms).`;
+            } else {
+              description += `. Now select a chat UI to complete your stack!`;
+            }
+          } else {
+            description += `. Now select a vector database to continue!`;
+          }
+        } else {
+          description += `. Now select a base model to continue building your stack!`;
+        }
+      }
+      
+      stackDescription.textContent = description;
+    }
+    
+    // Initialize
+    hidePizzaParts();
+    
+  </script>
+</body>
+</html>
