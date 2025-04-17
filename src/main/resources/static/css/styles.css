@@ -1,0 +1,357 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+    background-color: #f5f7fa;
+    padding: 20px;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .container {
+    max-width: 1200px;
+    width: 100%;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #2c3e50;
+    font-size: 2.5rem;
+  }
+  
+  .builder-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 50px;
+    width: 100%;
+  }
+  
+  .dropdowns-container {
+    display: flex;
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: 15px;
+    justify-content: space-between;
+  }
+  
+  .dropdown-section {
+    flex: 1;
+    min-width: 150px;
+  }
+  
+  .dropdown-label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    white-space: nowrap;
+  }
+  
+  .dropdown {
+    position: relative;
+    width: 100%;
+  }
+  
+  .dropdown select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    font-size: 0.95rem;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .dropdown select:hover {
+    border-color: #3498db;
+  }
+  
+  .dropdown select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+  }
+  
+  .dropdown::after {
+    content: '▼';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #2c3e50;
+  }
+  
+  .deploy-section {
+    text-align: center;
+    margin: 30px 0;
+  }
+  
+  #deploy-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 15px 50px;
+    font-size: 1.2rem;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  #deploy-btn:hover {
+    background-color: #2980b9;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+  
+  #deploy-btn:active {
+    transform: translateY(0);
+  }
+  
+  .visualization {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 20px;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  
+  .description {
+    flex: 1;
+    min-width: 300px;
+    background-color: #f8f9fa;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .description p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  
+  .pizza-container {
+    flex: 0 0 350px;
+    position: relative;
+    width: 350px;
+    height: 350px;
+    margin: 0 auto;
+  }
+  
+  .pizza-part {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.5s ease;
+    opacity: 0;
+  }
+  
+  .pizza-part.active {
+    opacity: 1;
+  }
+  
+  .pizza-base {
+    background-color: #4299e1;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 0;
+  }
+  
+  .logo-overlay {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 60px;
+    height: 60px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+  }
+  
+  .logo-overlay svg {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .step-indicator {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 40px;
+  }
+  
+  .step {
+    text-align: center;
+    flex: 1;
+    padding: 10px;
+    position: relative;
+  }
+  
+  .step::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: 100%;
+    height: 2px;
+    background-color: #ddd;
+    transform: translateY(-50%);
+    z-index: -1;
+  }
+  
+  .step:last-child::after {
+    display: none;
+  }
+  
+  .step-number {
+    background-color: #bdc3c7;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 10px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  
+  .step.active .step-number {
+    background-color: #3498db;
+    box-shadow: 0 0 0 5px rgba(52, 152, 219, 0.3);
+  }
+  
+  .step-label {
+    font-weight: 500;
+    color: #7f8c8d;
+    transition: all 0.3s ease;
+  }
+  
+  .step.active .step-label {
+    color: #2c3e50;
+    font-weight: 600;
+  }
+  
+  .pizza-complete {
+    margin-top: 30px;
+    text-align: center;
+    font-weight: bold;
+    color: #27ae60;
+    font-size: 1.2rem;
+    display: none;
+  }
+  
+  .pizza-complete.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* Responsive design */
+  @media (max-width: 1100px) {
+    .dropdowns-container {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 15px;
+      scrollbar-width: thin;
+      scrollbar-color: #3498db #f5f7fa;
+    }
+    
+    .dropdowns-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .dropdowns-container::-webkit-scrollbar-track {
+      background: #f5f7fa;
+    }
+    
+    .dropdowns-container::-webkit-scrollbar-thumb {
+      background-color: #3498db;
+      border-radius: 10px;
+    }
+    
+    .dropdown-section {
+      min-width: 200px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2rem;
+    }
+    
+    .step-label {
+      font-size: 0.85rem;
+    }
+    
+    .step-number {
+      width: 35px;
+      height: 35px;
+    }
+    
+    .description p {
+      font-size: 1rem;
+    }
+    
+    .pizza-container {
+      flex: 0 0 300px;
+      width: 300px;
+      height: 300px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    body {
+      padding: 15px;
+    }
+    
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 30px;
+    }
+    
+    .dropdown-label {
+      font-size: 1rem;
+    }
+    
+    .dropdown select {
+      padding: 10px;
+    }
+    
+    #deploy-btn {
+      padding: 12px 40px;
+      font-size: 1.1rem;
+    }
+    
+    .pizza-container {
+      flex: 0 0 250px;
+      width: 250px;
+      height: 250px;
+    }
+  }

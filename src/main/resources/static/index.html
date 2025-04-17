@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Stack Pizza Builder</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <div class="container">
@@ -244,11 +244,16 @@
     
     // Deploy button
     deployBtn.addEventListener('click', function() {
-      alert('Deploying your AI stack with the following components:\n\n' +
-            'GPU Hardware: ' + gpuSelect.options[gpuSelect.selectedIndex].text + '\n' +
-            'Base Model: ' + modelSelect.options[modelSelect.selectedIndex].text + '\n' +
-            'Vector Database: ' + vectorSelect.options[vectorSelect.selectedIndex].text + '\n' +
-            'Chat UI: ' + uiSelect.options[uiSelect.selectedIndex].text);
+      fetch('/egg')
+        .then(response => response.text())
+        .then(data => {
+          console.log('Easter egg response:', data);
+          alert('Easter egg found: ' + data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error calling easter egg endpoint');
+        });
     });
     
     // Helper functions
